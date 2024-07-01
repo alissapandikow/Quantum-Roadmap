@@ -1,25 +1,35 @@
 import matplotlib.pyplot as plt
-from read_data import read_data
 
-def plot_data(data):
-    plt.figure(figsize=(10, 6))
+def read_data(filename):
+    with open(filename, 'r') as file:
+        data = file.read().splitlines()
+    
+    milestones = {}
+    for line in data:
+        if line:
+            key, value = line.split(':')
+            milestones[key.strip()] = eval(value.strip())
+    
+    return milestones
 
-    for company, milestones in data.items():
-        years = [year for year, _ in milestones]
-        qubits = [qubits for _, qubits in milestones]
+def plot_roadmap(milestones):
+    plt.figure(figsize=(10, 8))
+    
+    for company, milestone in milestones.items():
+        years, qubits = zip(*milestone)
         plt.plot(years, qubits, marker='o', label=company)
-
-    plt.yscale('log')
+    
     plt.xlabel('Year')
-    plt.ylabel('Number of Qubits')
-    plt.title('Qubit Roadmap by Company')
+    plt.ylabel('Qubits')
+    plt.title('Quantum Computing Roadmap')
     plt.legend()
-    plt.grid(True, which="both", ls="--")
+    plt.grid(True)
+    plt.yscale('log')
     plt.show()
 
 def main():
-    data = read_data('structured_data.txt')
-    plot_data(data)
+    data = read_data('data.txt')
+    plot_roadmap(data)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
